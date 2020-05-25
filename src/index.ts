@@ -1,4 +1,4 @@
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import { uuid } from "uuidv4";
 import { ProjectInterface } from "./index.interface";
 
@@ -12,6 +12,15 @@ const projectsMock = [
     description: "First Description",
   },
 ] as ProjectInterface[];
+
+export function fakeAuthTokenMiddleware(request: Request, res: Response, next: NextFunction) {
+  const { authorization } = request.headers;
+
+  if (authorization != "TOKEN")
+    return res.status(400).json({ errMessage: "Token inválido" });
+
+  return next();
+}
 
 app.get("/projects", (_, res) => {
   return res.json(projectsMock);
@@ -35,7 +44,7 @@ app.post("/projects", (request, res) => {
   return res.json(newProject);
 });
 
-app.put("/projects/:id", (request, res) => {
+app.put("/projects/:id", fakeAuthTokenMiddleware, (request, res) => {
   const { id } = request.params;
 
   const projectIndex = projectsMock.findIndex((project) => project.id === id);
@@ -52,7 +61,7 @@ app.put("/projects/:id", (request, res) => {
   return res.json(projectUpdatedPayload);
 });
 
-app.delete("/projects/:id", (request, res) => {
+app.delete("/projects/:id", fakeAuthTokenMiddleware, (request, res) => {
   const { id } = request.params;
 
   const projectIndex = projectsMock.findIndex((project) => project.id === id);

@@ -60,6 +60,7 @@ describe("put - /projects/:id", () => {
     const { body } = await request(app)
       .put("/projects/firstId")
       .send(payloadToUpdate)
+      .set("Authorization", "TOKEN")
       .expect(200);
 
     expect(body).haveOwnProperty("id", "firstId");
@@ -70,7 +71,10 @@ describe("put - /projects/:id", () => {
 
 describe("delete - /projects/:id", () => {
   it("Should delete project with firstId", async () => {
-    await request(app).delete("/projects/firstId").expect(204);
+    await request(app)
+      .delete("/projects/firstId")
+      .set("Authorization", "TOKEN")
+      .expect(204);
     const { body } = await request(app).get("/projects");
     const projects = body as ProjectInterface[];
     expect(projects).to.not.include({ id: "firstId" });
