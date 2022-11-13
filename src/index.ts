@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from "express";
 import { uuid } from "uuidv4";
-import { ProjectInterface } from "./index.interface";
+import { IProjectInterface } from "./index.interface";
 
 const app = express();
 app.use(express.json());
@@ -11,7 +11,7 @@ const projectsMock = [
     name: "First Company Name",
     description: "First Description",
   },
-] as ProjectInterface[];
+] as IProjectInterface[];
 
 export function fakeAuthTokenMiddleware(request: Request, res: Response, next: NextFunction) {
   const { authorization } = request.headers;
@@ -37,7 +37,7 @@ app.get("/projects/:id", (request, res) => {
 });
 
 app.post("/projects", (request, res) => {
-  const newProjectBody = request.body as ProjectInterface;
+  const newProjectBody = request.body as IProjectInterface;
   const newProject = { ...newProjectBody, id: uuid() };
   projectsMock.push(newProject);
 
@@ -53,7 +53,7 @@ app.put("/projects/:id", fakeAuthTokenMiddleware, (request, res) => {
     return res.status(400).json({ errMessage: "Projeto nã encontrado" });
   }
 
-  const projectBody = request.body as ProjectInterface;
+  const projectBody = request.body as IProjectInterface;
   const projectUpdatedPayload = { ...projectBody, id };
 
   projectsMock[projectIndex] = projectUpdatedPayload;
